@@ -1,44 +1,27 @@
-### Checklist
+### MRE for `act` 973
 
-- [ ] document assumptions
-- [ ] this readme
-- [ ] testing
-- [ ] cover all supported Python versions
-- [ ] validate downloaded file checksums
-- [ ] algorithm
+https://github.com/nektos/act/issues/973
 
-### Assumptions
+Requirements:
+- ARM64 host, e.g. modern Mac
+- Docker Desktop (for Mac)
+- `brew install act`
 
-- Use Python standard library only, no 3rd party dependencies
-- Allow any supported Python version, today 3.8 ~ 3.12
-- Distribute as a single file, `package_statistics.py`
-- Keep dev-time stuff (tests, test data, scaffolding) separate
-
-### Testing
+When using `act` locally on a Mac:
 
 ```command
-> poetry run pytest
+> act --container-architecture linux/amd64
+[... snip ...]
+[test.yaml/pytest-3] ⭐ Run Post actions/setup-python@v4.7.1
+[test.yaml/pytest-3]   🐳  docker exec cmd=[node /var/run/act/actions/actions-setup-python@v4.7.1/dist/cache-save/index.js] user= workdir=
+| OCI runtime exec failed: exec failed: unable to start container process: exec: "node": executable file not found in $PATH: unknown
+[test.yaml/pytest-3]   ❌  Failure - Post actions/setup-python@v4.7.1
 ```
 
-- [x] test scaffold
-- [ ] unit tests
-- [ ] test data
-- [ ] functional tests
-- [x] continuous testing
+Why is does the `post` step fail when `main` step succeeds?
 
-### Misc
+#### Discussion
 
-Develop Github Actions on Mac:
+Why use `--container-architecture`?
 
-```command
-# Install a docker runtime, e.g. Docker for Mac
-> brew install act
-> act --container-architecture linux/x64
-```
-
-The latter is needed because `ubuntu-latest` only provides `arm64` Python packages for the latest versions.
-
-### Time Spent
-
-* ½h: pyproject, ruff, pre-commit, github actions, pytest
-* ...
+Because ubuntu-latest includes Python for arm arch for latest Python versions, while the intention of this project is to exercise all stable Python versions.
